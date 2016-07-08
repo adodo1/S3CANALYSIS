@@ -1,4 +1,4 @@
-﻿using Microsoft.DirectX;
+﻿using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +59,8 @@ namespace S3CLook
         // X轴: pitch 飞机俯仰
         // Y轴: yaw 飞机航向
         // Z轴: roll 飞机横滚
+
+        // 注意: 由于矩阵运算使用float所以精度会有很大影响
 
 
         private double _sensor_width = 0;       // 传感器宽度(单位: 毫米)
