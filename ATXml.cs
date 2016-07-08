@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.DirectX;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,29 +23,26 @@ namespace S3CLook
         public void Load(string file)
         {
             _file = file;
-            _doc = new XmlDocument();
-            _doc.Load(file);
-            using (StreamReader reader = new StreamReader(file)) {
-                StringBuilder builder = new StringBuilder();
-                int size = 4096;
-                int index = 0;
-                int num = 0;
-                do {
-                    char[] buffer = new char[size];
-                    num = reader.ReadBlock(buffer, 0, size);
-                    index += num;
-                    builder.Append(buffer);
-                } while (num > 0);
-                _xmlstr = builder.ToString();
-                reader.Close();
-            }
+
+
+
+
+
+            // 大文件处理参考
+            // 关键字 SetProcessWorkingSetSize 内存映射将文件分块 BufferStream MemoryMappedFile 超大 XML
+            // http://zhidao.baidu.com/link?url=rkHCtOXUCVjZsyH-K9fKlIpVfGjdQdUkUqK5RDSMbccuOucgcIx61ukOcDV2ThN_lmHHXjIrgw6Ip0BV-xkBbVMS19HBF7PGAGJ16BPaZOa
+            // http://q.cnblogs.com/q/52734/
+
         }
         /// <summary>
         /// 保存所有同名点文件
         /// </summary>
         public void SaveTiePoint()
         {
+
             // 能解析但是太慢了 必须动用正则表达式
+            //_doc = new XmlDocument();
+            //_doc.Load(file);
             //string result = "ID\tX\tY\tZ\r\n";
             //int num = 0;
             //XmlNodeList xnl = _doc.SelectNodes("/BlocksExchange/Block/TiePoints");
@@ -66,7 +64,61 @@ namespace S3CLook
             //}
 
 
+            Matrix mx = new Matrix();
+            //Matrix.PerspectiveFovLH(
+
+            StringBuilder buffer = new StringBuilder();
+            buffer.Append("ID\tX\tY\tZ\r\n");
+            int num = 0;
+            using (XmlReader reader = XmlReader.Create(_file)) {
+                reader.MoveToContent();
+                while (reader.Read()) {
+                    if (reader.NodeType == XmlNodeType.Element) {
+
+                        if (reader.Name == "TiePoints") {
+                            // 所有同名点
+                        }
+                        else if (reader.Name == "TiePoint") {
+                            // 单个同名点
+                            reader.Read();      // Whitespace
+                            reader.Read();      // Position 节点
+                            reader.Read();      // Whitespace
+                            reader.Read();      // x 节点
+                            reader.Read();      // text 文本
+                            string x = reader.Value;
+                            reader.Read();      // EndElement
+                            reader.Read();      // Whitespace
+                            reader.Read();      // y 节点
+                            reader.Read();      // text 文本
+                            string y = reader.Value;
+                            reader.Read();      // EndElement
+                            reader.Read();      // 空白节点
+                            reader.Read();      // z 节点
+                            reader.Read();      // text 文本
+                            string z = reader.Value;
+                            buffer.AppendFormat("{0}\t{1}\t{2}\t{3}\r\n", num++, x, y, z);
+                        }
+
+                        //var block = XElement.ReadFrom(reader) as XElement;
+                        
+                    }
+                }
+            }
+
+            // 保存
+            string path = Path.GetDirectoryName(_file);
+            string name = Path.GetFileNameWithoutExtension(_file);
+            string file = path + "\\" + name + ".tiepoints.txt";
+            using (StreamWriter writer = new StreamWriter(file)) {
+                writer.Write(buffer.ToString());
+                writer.Flush();
+                writer.Close();
+            }
+
+            
+
         }
 
     }
 }
+
