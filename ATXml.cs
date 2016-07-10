@@ -1,6 +1,7 @@
 ﻿using SharpDX;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -39,34 +40,6 @@ namespace S3CLook
         /// </summary>
         public void SaveTiePoint()
         {
-
-            // 能解析但是太慢了 必须动用正则表达式
-            //_doc = new XmlDocument();
-            //_doc.Load(file);
-            //string result = "ID\tX\tY\tZ\r\n";
-            //int num = 0;
-            //XmlNodeList xnl = _doc.SelectNodes("/BlocksExchange/Block/TiePoints");
-            //foreach (XmlNode tiePointNode in xnl[0]) {
-            //    XmlNode position = tiePointNode["Position"];
-            //    string x = position["x"].InnerText;
-            //    string y = position["y"].InnerText;
-            //    string z = position["z"].InnerText;
-            //    result += string.Format("{0}\t{1}\t{2}\t{3}\r\n", num++, x, y, z);
-            //}
-            //// 保存
-            //string path = Path.GetDirectoryName(_file);
-            //string name = Path.GetFileNameWithoutExtension(_file);
-            //string file = path + "\\" + name + ".tiepoints.txt";
-            //using (StreamWriter writer = new StreamWriter(file)) {
-            //    writer.Write(result);
-            //    writer.Flush();
-            //    writer.Close();
-            //}
-
-
-            Matrix mx = new Matrix();
-            //Matrix.PerspectiveFovLH(
-
             StringBuilder buffer = new StringBuilder();
             buffer.Append("ID\tX\tY\tZ\r\n");
             int num = 0;
@@ -114,9 +87,103 @@ namespace S3CLook
                 writer.Flush();
                 writer.Close();
             }
+        }
+        /// <summary>
+        /// 保存所有照片数据
+        /// </summary>
+        public DataTable SavePhotos()
+        {
+            DataTable result = new DataTable();
+            result.Columns.Add("id", typeof(int));
+            result.Columns.Add("name", typeof(string));
+            result.Columns.Add("path", typeof(string));
+            result.Columns.Add("omega", typeof(double));
+            result.Columns.Add("phi", typeof(double));
+            result.Columns.Add("kappa", typeof(double));
+            result.Columns.Add("x", typeof(double));
+            result.Columns.Add("y", typeof(double));
+            result.Columns.Add("z", typeof(double));
 
-            
+            using (XmlReader reader = XmlReader.Create(_file)) {
+                reader.MoveToContent();
+                while (reader.Read()) {
+                    if (reader.NodeType == XmlNodeType.Element) {
 
+                        if (reader.Name == "Photo") {
+                            // 单张照片
+                            //for (int i = 0; i < 50; i++) {
+                            //    Console.WriteLine("{0}[{1}]: {2} {3}", i, reader.Name, reader.NodeType, reader.Value);
+                            //    reader.Read();
+                            //}
+
+                            string id = "";
+                            string file = "";
+                            string omega = "";
+                            string phi = "";
+                            string kappa = "";
+                            string x = "";
+                            string y = "";
+                            string z = "";
+
+                            while (reader.Read()) {
+                                if (reader.Name == "Photo") break;
+                                else if (reader.NodeType != XmlNodeType.Element &&
+                                         reader.NodeType != XmlNodeType.Text) {
+                                    // 
+                                    continue;
+                                }
+                                else if (reader.Name == "Id") {
+                                    reader.Read();
+                                    id = reader.Value;
+                                }
+                                else if (reader.Name == "ImagePath") {
+                                    reader.Read();
+                                    file = reader.Value;
+                                }
+                                else if (reader.Name == "Omega") {
+                                    reader.Read();
+                                    omega = reader.Value;
+                                }
+                                else if (reader.Name == "Phi") {
+                                    reader.Read();
+                                    phi = reader.Value;
+                                }
+                                else if (reader.Name == "Kappa") {
+                                    reader.Read();
+                                    kappa = reader.Value;
+                                }
+                                else if (reader.Name == "x") {
+                                    reader.Read();
+                                    x = reader.Value;
+                                }
+                                else if (reader.Name == "y") {
+                                    reader.Read();
+                                    y = reader.Value;
+                                }
+                                else if (reader.Name == "z") {
+                                    reader.Read();
+                                    z = reader.Value;
+                                }
+                            }
+                            if (x == "" || y == "" || z == "") continue;
+
+
+                            DataRow row = result.NewRow();
+                            row["id"] = int.Parse(id);
+                            row["name"] = Path.GetFileName(file);
+                            row["path"] = Path.GetDirectoryName(file);
+                            row["omega"] = double.Parse(omega);
+                            row["phi"] = double.Parse(phi);
+                            row["kappa"] = double.Parse(kappa);
+                            row["x"] = double.Parse(x);
+                            row["y"] = double.Parse(y);
+                            row["z"] = double.Parse(z);
+                            result.Rows.Add(row);
+                        }
+                    }
+                }
+            }
+            return result;
         }
 
     }
