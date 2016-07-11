@@ -12,6 +12,98 @@ namespace S3CLook
     {
         static void Main(string[] args)
         {
+            //Test1();
+            //Test2();
+            //Test3();
+            //Test4();
+            Test5();
+        }
+
+        /// <summary>
+        /// 测试1
+        /// </summary>
+        private static void Test1()
+        {
+            double image_width = 6000;      // 照片宽度
+            double image_height = 4000;     // 照片高度
+            double foacl35 = 51.9404;       // 35mm等效焦距
+            double omega = 180.0 - 175.5202967407976;
+            double phi = 28.47765948934057;
+            double kappa = -0.9386577561617924;
+            double x = 344425.1889122094;
+            double y = 2685902.18347278;
+            double z = 293.6589041985571;
+
+
+            Photo3D photo = new Photo3D(foacl35, image_width, image_height, omega, phi, kappa, 0, 0, z);
+            Vector3[] result = photo.GetArea(88);
+
+
+            DataTable table = new DataTable();
+            table.Columns.Add("ID", typeof(int));               // 序号
+            table.Columns.Add("NAME", typeof(string));          // 照片名称
+            table.Columns.Add("PATH", typeof(string));          // 照片路径
+            table.Columns.Add("IMGWIDTH", typeof(double));      // 照片宽度
+            table.Columns.Add("IMGHEIGHT", typeof(double));     // 照片高度
+            table.Columns.Add("FOACL35", typeof(double));       // 35mm等效焦距
+            table.Columns.Add("OMEGA", typeof(double));         // X轴旋转
+            table.Columns.Add("PHI", typeof(double));           // Y轴旋转
+            table.Columns.Add("KAPPA", typeof(double));         // Z轴旋转
+            table.Columns.Add("X", typeof(double));             // X坐标
+            table.Columns.Add("Y", typeof(double));             // Y坐标
+            table.Columns.Add("Z", typeof(double));             // Z坐标
+            table.Columns.Add("SHAPE", typeof(SHPRecord));      // 图形
+
+            // 构造图形
+            SHPRecord shprecord = new SHPRecord() { ShapeType = SHPT.ARC };
+            shprecord.Parts.Add(0);                         // 第一个分段 从0号点开始
+            foreach (var item in result) {
+                double xx = item.X + x;
+                double yy = item.Y + y;
+                double zz = item.Z;
+                shprecord.Points.Add(new double[] { xx, yy, zz, 0 });
+            }
+            shprecord.Points.Add(shprecord.Points[0]);      // 闭合
+            // 添加焦点连线 如果不想要注释掉就好
+            double[] focus = new double[] { x, y, z, 0 };
+            shprecord.Parts.Add(shprecord.Points.Count);
+            shprecord.Points.Add(shprecord.Points[0]);
+            shprecord.Points.Add(focus);
+            shprecord.Parts.Add(shprecord.Points.Count);
+            shprecord.Points.Add(shprecord.Points[1]);
+            shprecord.Points.Add(focus);
+            shprecord.Parts.Add(shprecord.Points.Count);
+            shprecord.Points.Add(shprecord.Points[2]);
+            shprecord.Points.Add(focus);
+            shprecord.Parts.Add(shprecord.Points.Count);
+            shprecord.Points.Add(shprecord.Points[3]);
+            shprecord.Points.Add(focus);
+            
+            // 添加图形
+            DataRow row = table.NewRow();
+            row["ID"] = 0;
+            row["NAME"] = "TEST.JPG";
+            row["PATH"] = "./";
+            row["IMGWIDTH"] = image_width;
+            row["IMGHEIGHT"] = image_height;
+            row["FOACL35"] = foacl35;
+            row["OMEGA"] = omega;
+            row["PHI"] = phi;
+            row["KAPPA"] = kappa;
+            row["X"] = x;
+            row["Y"] = y;
+            row["Z"] = z;
+            row["SHAPE"] = shprecord;
+
+            table.Rows.Add(row);
+            
+            bool success = ExportSHP("./data/test.shp", table, SHPT.ARCZ);
+        }
+        /// <summary>
+        /// 测试2
+        /// </summary>
+        private static void Test2()
+        {
 
             // 处理空中三角XML
             //ATXml atxml = new ATXml();
@@ -67,14 +159,18 @@ namespace S3CLook
                 double foacl35 = 52.0;          // 35mm等效焦距
 
                 double omega = 180.0 - (double)photorow["omega"];  // x
-                double phi = 0 - (double)photorow["phi"];          // y
-                double kappa = 0 - (double)photorow["phi"];        // z
+                double phi = (double)photorow["phi"];          // y
+                double kappa = (double)photorow["kappa"];      // z
                 double x = (double)photorow["x"];
                 double y = (double)photorow["y"];
                 double z = (double)photorow["z"];
                 string name = (string)photorow["name"];
                 string path = (string)photorow["path"];
                 int id = (int)photorow["id"];
+
+
+                x = x - 344741;
+                y = y - 2686064;
 
 
                 Photo3D photo = new Photo3D(foacl35, image_width, image_height, omega, phi, kappa, 0, 0, z);
@@ -94,19 +190,19 @@ namespace S3CLook
                 }
                 shprecord.Points.Add(shprecord.Points[0]);      // 闭合
                 // 添加焦点连线 如果不想要注释掉就好
-                //double[] focus = new double[] { x, y, z, 0 };
-                //shprecord.Parts.Add(shprecord.Points.Count);
-                //shprecord.Points.Add(shprecord.Points[0]);
-                //shprecord.Points.Add(focus);
-                //shprecord.Parts.Add(shprecord.Points.Count);
-                //shprecord.Points.Add(shprecord.Points[1]);
-                //shprecord.Points.Add(focus);
-                //shprecord.Parts.Add(shprecord.Points.Count);
-                //shprecord.Points.Add(shprecord.Points[2]);
-                //shprecord.Points.Add(focus);
-                //shprecord.Parts.Add(shprecord.Points.Count);
-                //shprecord.Points.Add(shprecord.Points[3]);
-                //shprecord.Points.Add(focus);
+                double[] focus = new double[] { x, y, z, 0 };
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[0]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[1]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[2]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[3]);
+                shprecord.Points.Add(focus);
 
                 // 添加图形
                 DataRow row = table.NewRow();
@@ -126,26 +222,601 @@ namespace S3CLook
 
                 table.Rows.Add(row);
             }
-
-
-
-
             
 
 
-            bool success = ExportSHP("./data/test.shp", table, SHPT.ARC);
-
-
-
-
-
-
+            bool success = ExportSHP("./data/test.shp", table, SHPT.ARCZ);
 
         }
+        /// <summary>
+        /// 测试3
+        /// </summary>
+        private static void Test3()
+        {
+
+            // 处理空中三角XML
+            //ATXml atxml = new ATXml();
+            //atxml.Load("../data/test1.xml");
+            //atxml.SaveTiePoint();
 
 
+            DataTable photos = new DataTable();
+            photos.Columns.Add("id", typeof(int));
+            photos.Columns.Add("name", typeof(string));
+            photos.Columns.Add("path", typeof(string));
+            photos.Columns.Add("omega", typeof(double));
+            photos.Columns.Add("phi", typeof(double));
+            photos.Columns.Add("kappa", typeof(double));
+            photos.Columns.Add("x", typeof(double));
+            photos.Columns.Add("y", typeof(double));
+            photos.Columns.Add("z", typeof(double));
+
+            // omega
+            for (int i = -180; i < 0; i += 5) {
+                DataRow row = photos.NewRow();
+                row["id"] = i;
+                row["name"] = "OMEGA";
+                row["path"] = "";
+                row["omega"] = i;
+                row["phi"] = 0;
+                row["kappa"] = 0;
+                row["x"] = 344425.1889122094;
+                row["y"] = 2685902.18347278;
+                row["z"] = 293.6589041985571;
+                photos.Rows.Add(row);
+            }
+            // phi
+            for (int i = -45; i < 45; i += 5) {
+                DataRow row = photos.NewRow();
+                row["id"] = i;
+                row["name"] = "PHI";
+                row["path"] = "";
+                row["omega"] = -180;
+                row["phi"] = i;
+                row["kappa"] = 0;
+                row["x"] = 344425.1889122094;
+                row["y"] = 2685902.18347278;
+                row["z"] = 293.6589041985571;
+                photos.Rows.Add(row);
+            }
+            // kappa
+            for (int i = -45; i < 45; i += 5) {
+                DataRow row = photos.NewRow();
+                row["id"] = i;
+                row["name"] = "KAPPA";
+                row["path"] = "";
+                row["omega"] = -180;
+                row["phi"] = 0;
+                row["kappa"] = i;
+                row["x"] = 344425.1889122094;
+                row["y"] = 2685902.18347278;
+                row["z"] = 293.6589041985571;
+                photos.Rows.Add(row);
+            }
 
 
+            DataTable table = new DataTable();
+            table.Columns.Add("ID", typeof(int));               // 序号
+            table.Columns.Add("NAME", typeof(string));          // 照片名称
+            table.Columns.Add("PATH", typeof(string));          // 照片路径
+            table.Columns.Add("IMGWIDTH", typeof(double));      // 照片宽度
+            table.Columns.Add("IMGHEIGHT", typeof(double));     // 照片高度
+            table.Columns.Add("FOACL35", typeof(double));       // 35mm等效焦距
+            table.Columns.Add("OMEGA", typeof(double));         // X轴旋转
+            table.Columns.Add("PHI", typeof(double));           // Y轴旋转
+            table.Columns.Add("KAPPA", typeof(double));         // Z轴旋转
+            table.Columns.Add("X", typeof(double));             // X坐标
+            table.Columns.Add("Y", typeof(double));             // Y坐标
+            table.Columns.Add("Z", typeof(double));             // Z坐标
+            table.Columns.Add("SHAPE", typeof(SHPRecord));      // 图形
+
+            foreach (DataRow photorow in photos.Rows) {
+                // 
+                double image_width = 6000;      // 照片宽度
+                double image_height = 4000;     // 照片高度
+                double foacl35 = 52.0;          // 35mm等效焦距
+
+                double omega = 180.0 - (double)photorow["omega"];  // x
+                double phi = (double)photorow["phi"];          // y
+                double kappa = (double)photorow["kappa"];      // z
+                double x = (double)photorow["x"];
+                double y = (double)photorow["y"];
+                double z = (double)photorow["z"];
+                string name = (string)photorow["name"];
+                string path = (string)photorow["path"];
+                int id = (int)photorow["id"];
+
+
+                x = x - 344741;
+                y = y - 2686064;
+
+
+                Photo3D photo = new Photo3D(foacl35, image_width, image_height, omega, phi, kappa, 0, 0, z);
+                Vector3[] result = photo.GetArea(87);
+
+                if (result == null) continue;
+
+                // 构造图形
+                SHPRecord shprecord = new SHPRecord() { ShapeType = SHPT.ARC };
+                shprecord.Parts.Add(0);                         // 第一个分段 从0号点开始
+                foreach (var item in result) {
+                    // 这里是引用类型不能把item的类型写出来
+                    double xx = item.X + x;
+                    double yy = item.Y + y;
+                    double zz = item.Z;
+                    shprecord.Points.Add(new double[] { xx, yy, zz, 0 });
+                }
+                shprecord.Points.Add(shprecord.Points[0]);      // 闭合
+                // 添加焦点连线 如果不想要注释掉就好
+                double[] focus = new double[] { x, y, z, 0 };
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[0]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[1]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[2]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[3]);
+                shprecord.Points.Add(focus);
+
+                // 添加图形
+                DataRow row = table.NewRow();
+                row["ID"] = id;
+                row["NAME"] = name;
+                row["PATH"] = path;
+                row["IMGWIDTH"] = image_width;
+                row["IMGHEIGHT"] = image_height;
+                row["FOACL35"] = foacl35;
+                row["OMEGA"] = omega;
+                row["PHI"] = phi;
+                row["KAPPA"] = kappa;
+                row["X"] = x;
+                row["Y"] = y;
+                row["Z"] = z;
+                row["SHAPE"] = shprecord;
+
+                table.Rows.Add(row);
+            }
+            
+
+
+            bool success = ExportSHP("./data/test.shp", table, SHPT.ARCZ);
+
+        }
+        /// <summary>
+        /// 测试4
+        /// </summary>
+        private static void Test4()
+        {
+            // 处理空中三角XML
+            //ATXml atxml = new ATXml();
+            //atxml.Load("../data/test1.xml");
+            //atxml.SaveTiePoint();
+
+            ATXml atxml = new ATXml();
+            atxml.Load("../data/LIANHUASHAN_2_XIAN80.xml");
+            DataTable photos = atxml.SavePhotos();
+
+            DataTable table = new DataTable();
+            table.Columns.Add("ID", typeof(int));               // 序号
+            table.Columns.Add("NAME", typeof(string));          // 照片名称
+            table.Columns.Add("PATH", typeof(string));          // 照片路径
+            table.Columns.Add("IMGWIDTH", typeof(double));      // 照片宽度
+            table.Columns.Add("IMGHEIGHT", typeof(double));     // 照片高度
+            table.Columns.Add("FOACL35", typeof(double));       // 35mm等效焦距
+            table.Columns.Add("OMEGA", typeof(double));         // X轴旋转
+            table.Columns.Add("PHI", typeof(double));           // Y轴旋转
+            table.Columns.Add("KAPPA", typeof(double));         // Z轴旋转
+            table.Columns.Add("X", typeof(double));             // X坐标
+            table.Columns.Add("Y", typeof(double));             // Y坐标
+            table.Columns.Add("Z", typeof(double));             // Z坐标
+            table.Columns.Add("SHAPE", typeof(SHPRecord));      // 图形
+
+            foreach (DataRow photorow in photos.Rows) {
+                // 
+                double image_width = 6000;      // 照片宽度
+                double image_height = 4000;     // 照片高度
+                double foacl35 = 52.0;          // 35mm等效焦距
+
+                double omega = 180.0 - (double)photorow["omega"];  // x
+                double phi = (double)photorow["phi"];          // y
+                double kappa = (double)photorow["kappa"];      // z
+                double x = (double)photorow["x"];
+                double y = (double)photorow["y"];
+                double z = (double)photorow["z"];
+                string name = (string)photorow["name"];
+                string path = (string)photorow["path"];
+                int id = (int)photorow["id"];
+
+                //if (Math.Abs(omega) < 179 ||
+                //    Math.Abs(phi) > 1) continue;
+
+                if (name != "DSC00156.JPG") continue;
+
+                Photo3D photo = new Photo3D(foacl35, image_width, image_height, omega, phi, kappa, 0, 0, z);
+                Vector3[] result = photo.GetArea(0);
+
+                if (result == null) continue;
+
+                // 构造图形
+                SHPRecord shprecord = new SHPRecord() { ShapeType = SHPT.ARC };
+                shprecord.Parts.Add(0);                         // 第一个分段 从0号点开始
+                foreach (var item in result) {
+                    // 这里是引用类型不能把item的类型写出来
+                    double xx = item.X + x;
+                    double yy = item.Y + y;
+                    double zz = item.Z;
+                    shprecord.Points.Add(new double[] { xx, yy, zz, 0 });
+                }
+                shprecord.Points.Add(shprecord.Points[0]);      // 闭合
+                // 添加焦点连线 如果不想要注释掉就好
+                double[] focus = new double[] { x, y, z, 0 };
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[0]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[1]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[2]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[3]);
+                shprecord.Points.Add(focus);
+
+                // 添加图形
+                DataRow row = table.NewRow();
+                row["ID"] = id;
+                row["NAME"] = name;
+                row["PATH"] = path;
+                row["IMGWIDTH"] = image_width;
+                row["IMGHEIGHT"] = image_height;
+                row["FOACL35"] = foacl35;
+                row["OMEGA"] = omega;
+                row["PHI"] = phi;
+                row["KAPPA"] = kappa;
+                row["X"] = x;
+                row["Y"] = y;
+                row["Z"] = z;
+                row["SHAPE"] = shprecord;
+
+                table.Rows.Add(row);
+            }
+            
+
+
+            bool success = ExportSHP("./data/test.shp", table, SHPT.ARCZ);
+
+        }
+        /// <summary>
+        /// 测试5
+        /// </summary>
+        private static void Test5()
+        {
+            DataTable photos = new DataTable();
+            photos.Columns.Add("id", typeof(int));
+            photos.Columns.Add("name", typeof(string));
+            photos.Columns.Add("path", typeof(string));
+            photos.Columns.Add("omega", typeof(double));
+            photos.Columns.Add("phi", typeof(double));
+            photos.Columns.Add("kappa", typeof(double));
+            photos.Columns.Add("x", typeof(double));
+            photos.Columns.Add("y", typeof(double));
+            photos.Columns.Add("z", typeof(double));
+
+
+            double oo = -161.71783395000455;
+            double pp = 18.987139550088642;
+            double kk = 111.29725261667032;
+
+            photos.Rows.Add(new object[] {
+                1, "", "",
+                180 - oo,
+                pp,
+                kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                2, "", "",
+                180 - oo,
+                -pp,
+                kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                3, "", "",
+                180 - oo,
+                pp,
+                -kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                4, "", "",
+                180 - oo,
+                -pp,
+                -kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                5, "", "",
+                180 - oo,
+                180 - pp,
+                kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                6, "", "",
+                180 - oo,
+                pp,
+                180 - kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                7, "", "",
+                180 - oo,
+                180 - pp,
+                -kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                8, "", "",
+                180 - oo,
+                -pp,
+                180 - kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            ////////
+            photos.Rows.Add(new object[] {
+                11, "", "",
+                oo,
+                pp,
+                kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                22, "", "",
+                oo,
+                -pp,
+                kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                33, "", "",
+                oo,
+                pp,
+                -kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                44, "", "",
+                oo,
+                -pp,
+                -kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                55, "", "",
+                oo,
+                180 - pp,
+                kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                66, "", "",
+                oo,
+                pp,
+                180 - kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                77, "", "",
+                oo,
+                180 - pp,
+                -kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                88, "", "",
+                oo,
+                -pp,
+                180 - kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            ////////
+            photos.Rows.Add(new object[] {
+                111, "", "",
+                -oo,
+                pp,
+                kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                222, "", "",
+                -oo,
+                -pp,
+                kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                333, "", "",
+                -oo,
+                pp,
+                -kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                444, "", "",
+                -oo,
+                -pp,
+                -kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                555, "", "",
+                -oo,
+                180 - pp,
+                kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                666, "", "",
+                -oo,
+                pp,
+                180 - kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                777, "", "",
+                -oo,
+                180 - pp,
+                -kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+            photos.Rows.Add(new object[] {
+                888, "", "",
+                -oo,
+                -pp,
+                180 - kk,
+                99404.530169771184,
+                2702586.2241647677,
+                348.57052615936846
+            });
+
+            DataTable table = new DataTable();
+            table.Columns.Add("ID", typeof(int));               // 序号
+            table.Columns.Add("NAME", typeof(string));          // 照片名称
+            table.Columns.Add("PATH", typeof(string));          // 照片路径
+            table.Columns.Add("IMGWIDTH", typeof(double));      // 照片宽度
+            table.Columns.Add("IMGHEIGHT", typeof(double));     // 照片高度
+            table.Columns.Add("FOACL35", typeof(double));       // 35mm等效焦距
+            table.Columns.Add("OMEGA", typeof(double));         // X轴旋转
+            table.Columns.Add("PHI", typeof(double));           // Y轴旋转
+            table.Columns.Add("KAPPA", typeof(double));         // Z轴旋转
+            table.Columns.Add("X", typeof(double));             // X坐标
+            table.Columns.Add("Y", typeof(double));             // Y坐标
+            table.Columns.Add("Z", typeof(double));             // Z坐标
+            table.Columns.Add("SHAPE", typeof(SHPRecord));      // 图形
+
+            foreach (DataRow photorow in photos.Rows) {
+                // 
+                double image_width = 6000;      // 照片宽度
+                double image_height = 4000;     // 照片高度
+                double foacl35 = 52.0;          // 35mm等效焦距
+
+                double omega = 180.0 - (double)photorow["omega"];  // x
+                double phi = (double)photorow["phi"];          // y
+                double kappa = (double)photorow["kappa"];      // z
+                double x = (double)photorow["x"];
+                double y = (double)photorow["y"];
+                double z = (double)photorow["z"];
+                string name = (string)photorow["name"];
+                string path = (string)photorow["path"];
+                int id = (int)photorow["id"];
+
+                Photo3D photo = new Photo3D(foacl35, image_width, image_height, omega, phi, kappa, 0, 0, z);
+                Vector3[] result = photo.GetArea(0);
+
+                if (result == null) continue;
+
+                // 构造图形
+                SHPRecord shprecord = new SHPRecord() { ShapeType = SHPT.ARC };
+                shprecord.Parts.Add(0);                         // 第一个分段 从0号点开始
+                foreach (var item in result) {
+                    // 这里是引用类型不能把item的类型写出来
+                    double xx = item.X + x;
+                    double yy = item.Y + y;
+                    double zz = item.Z;
+                    shprecord.Points.Add(new double[] { xx, yy, zz, 0 });
+                }
+                shprecord.Points.Add(shprecord.Points[0]);      // 闭合
+                // 添加焦点连线 如果不想要注释掉就好
+                double[] focus = new double[] { x, y, z, 0 };
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[0]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[1]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[2]);
+                shprecord.Points.Add(focus);
+                shprecord.Parts.Add(shprecord.Points.Count);
+                shprecord.Points.Add(shprecord.Points[3]);
+                shprecord.Points.Add(focus);
+
+                // 添加图形
+                DataRow row = table.NewRow();
+                row["ID"] = id;
+                row["NAME"] = name;
+                row["PATH"] = path;
+                row["IMGWIDTH"] = image_width;
+                row["IMGHEIGHT"] = image_height;
+                row["FOACL35"] = foacl35;
+                row["OMEGA"] = omega;
+                row["PHI"] = phi;
+                row["KAPPA"] = kappa;
+                row["X"] = x;
+                row["Y"] = y;
+                row["Z"] = z;
+                row["SHAPE"] = shprecord;
+
+                table.Rows.Add(row);
+            }
+            
+
+
+            bool success = ExportSHP("./data/test.shp", table, SHPT.ARCZ);
+
+        }
 
         /// <summary>
         /// 导出SHP数据
@@ -287,6 +958,7 @@ namespace S3CLook
             }
             return true;
         }
+
 
 
     }

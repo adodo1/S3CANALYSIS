@@ -78,7 +78,6 @@
     <Compile Include="SharpDX\Mathematics\BoundingBox.cs" />
     <Compile Include="SharpDX\Mathematics\BoundingFrustum.cs" />
     <Compile Include="SharpDX\Mathematics\BoundingSphere.cs" />
-    <Compile Include="SharpDX\Mathematics\Class1.cs" />
     <Compile Include="SharpDX\Mathematics\Collision.cs" />
     <Compile Include="SharpDX\Mathematics\Color.cs" />
     <Compile Include="SharpDX\Mathematics\Color.Palette.cs" />
