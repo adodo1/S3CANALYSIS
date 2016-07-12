@@ -15,8 +15,8 @@ namespace S3CLook
             //Test1();
             //Test2();
             //Test3();
-            //Test4();
-            Test5();
+            Test4();
+            //Test5();
         }
 
         /// <summary>
@@ -158,8 +158,8 @@ namespace S3CLook
                 double image_height = 4000;     // 照片高度
                 double foacl35 = 52.0;          // 35mm等效焦距
 
-                double omega = 180.0 - (double)photorow["omega"];  // x
-                double phi = (double)photorow["phi"];          // y
+                double omega = 0 - (double)photorow["omega"];  // x
+                double phi = 0 - (double)photorow["phi"];          // y
                 double kappa = (double)photorow["kappa"];      // z
                 double x = (double)photorow["x"];
                 double y = (double)photorow["y"];
@@ -397,7 +397,8 @@ namespace S3CLook
             //atxml.SaveTiePoint();
 
             ATXml atxml = new ATXml();
-            atxml.Load("../data/LIANHUASHAN_2_XIAN80.xml");
+            //atxml.Load("../data/LIANHUASHAN_2_XIAN80.xml");
+            atxml.Load("../data/WGS84_UTM_49_32649.xml");
             DataTable photos = atxml.SavePhotos();
 
             DataTable table = new DataTable();
@@ -421,9 +422,9 @@ namespace S3CLook
                 double image_height = 4000;     // 照片高度
                 double foacl35 = 52.0;          // 35mm等效焦距
 
-                double omega = 180.0 - (double)photorow["omega"];  // x
-                double phi = (double)photorow["phi"];          // y
-                double kappa = (double)photorow["kappa"];      // z
+                double omega = 180 + (double)photorow["omega"];     // x
+                double phi = 0 - (double)photorow["phi"];          // y
+                double kappa = 0 - (double)photorow["kappa"];      // z
                 double x = (double)photorow["x"];
                 double y = (double)photorow["y"];
                 double z = (double)photorow["z"];
@@ -434,7 +435,9 @@ namespace S3CLook
                 //if (Math.Abs(omega) < 179 ||
                 //    Math.Abs(phi) > 1) continue;
 
-                if (name != "DSC00156.JPG") continue;
+                //if (name != "DSC00538.JPG") continue;
+
+                
 
                 Photo3D photo = new Photo3D(foacl35, image_width, image_height, omega, phi, kappa, 0, 0, z);
                 Vector3[] result = photo.GetArea(0);
@@ -508,81 +511,75 @@ namespace S3CLook
             photos.Columns.Add("z", typeof(double));
 
 
-            double oo = -161.71783395000455;
-            double pp = 18.987139550088642;
-            double kk = 111.29725261667032;
+            //double oo = -161.71783395000455;
+            //double pp = 18.987139550088642;
+            //double kk = 111.29725261667032;
+            //double xx = 99404.530169771184;
+            //double yy = 2702586.2241647677;
+            //double zz = 348.57052615936846;
+
+            double oo = 148.20431305857122;
+            double pp = 4.6638374299675993;
+            double kk = -106.68806535618991;
+            double xx = 98672.510971207768;
+            double yy = 2701719.236410012;
+            double zz = 345.28511809650809;
 
             photos.Rows.Add(new object[] {
                 1, "", "",
                 180 - oo,
                 pp,
                 kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 2, "", "",
                 180 - oo,
                 -pp,
                 kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                 xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 3, "", "",
                 180 - oo,
                 pp,
                 -kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 4, "", "",
                 180 - oo,
                 -pp,
                 -kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 5, "", "",
                 180 - oo,
                 180 - pp,
                 kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 6, "", "",
                 180 - oo,
                 pp,
                 180 - kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                 xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 7, "", "",
                 180 - oo,
                 180 - pp,
                 -kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                 xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 8, "", "",
                 180 - oo,
                 -pp,
                 180 - kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             ////////
             photos.Rows.Add(new object[] {
@@ -590,72 +587,56 @@ namespace S3CLook
                 oo,
                 pp,
                 kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 22, "", "",
                 oo,
                 -pp,
                 kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 33, "", "",
                 oo,
                 pp,
                 -kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 44, "", "",
                 oo,
                 -pp,
                 -kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 55, "", "",
                 oo,
                 180 - pp,
                 kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 66, "", "",
                 oo,
                 pp,
                 180 - kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 77, "", "",
                 oo,
                 180 - pp,
                 -kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 88, "", "",
                 oo,
                 -pp,
                 180 - kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             ////////
             photos.Rows.Add(new object[] {
@@ -663,72 +644,56 @@ namespace S3CLook
                 -oo,
                 pp,
                 kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 222, "", "",
                 -oo,
                 -pp,
                 kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 333, "", "",
                 -oo,
                 pp,
                 -kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 444, "", "",
                 -oo,
                 -pp,
                 -kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 555, "", "",
                 -oo,
                 180 - pp,
                 kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 666, "", "",
                 -oo,
                 pp,
                 180 - kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 777, "", "",
                 -oo,
                 180 - pp,
                 -kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
             photos.Rows.Add(new object[] {
                 888, "", "",
                 -oo,
                 -pp,
                 180 - kk,
-                99404.530169771184,
-                2702586.2241647677,
-                348.57052615936846
+                xx, yy, zz
             });
 
             DataTable table = new DataTable();
@@ -772,10 +737,10 @@ namespace S3CLook
                 shprecord.Parts.Add(0);                         // 第一个分段 从0号点开始
                 foreach (var item in result) {
                     // 这里是引用类型不能把item的类型写出来
-                    double xx = item.X + x;
-                    double yy = item.Y + y;
-                    double zz = item.Z;
-                    shprecord.Points.Add(new double[] { xx, yy, zz, 0 });
+                    double xxx = item.X + x;
+                    double yyy = item.Y + y;
+                    double zzz = item.Z;
+                    shprecord.Points.Add(new double[] { xxx, yyy, zzz, 0 });
                 }
                 shprecord.Points.Add(shprecord.Points[0]);      // 闭合
                 // 添加焦点连线 如果不想要注释掉就好
