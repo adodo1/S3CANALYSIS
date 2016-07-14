@@ -12,12 +12,12 @@ namespace S3CLook
     {
         static void Main(string[] args)
         {
-            //Test1();
+            Test1();
             //Test2();
             //Test3();
             //Test4();
             //Test5();
-            Test6();
+            //Test6();
         }
 
         /// <summary>
@@ -25,19 +25,29 @@ namespace S3CLook
         /// </summary>
         private static void Test1()
         {
-            double image_width = 6000;      // 照片宽度
-            double image_height = 4000;     // 照片高度
-            double foacl35 = 51.9404;       // 35mm等效焦距
-            double omega = 180.0 - 175.5202967407976;
-            double phi = 28.47765948934057;
-            double kappa = -0.9386577561617924;
+            //double image_width = 6000;      // 照片宽度
+            //double image_height = 4000;     // 照片高度
+            //double foacl35 = 51.9404;       // 35mm等效焦距
+            //double omega = 180.0 - 175.5202967407976;
+            //double phi = 28.47765948934057;
+            //double kappa = -0.9386577561617924;
+            //double x = 344425.1889122094;
+            //double y = 2685902.18347278;
+            //double z = 293.6589041985571;
+
+            double image_width = 4000;      // 照片宽度
+            double image_height = 3000;     // 照片高度
+            double foacl35 = 20.0;          // 35mm等效焦距
+            double omega = 180.0 + 180;
+            double phi = 0 - 0;
+            double kappa = 0 - 0;
             double x = 344425.1889122094;
             double y = 2685902.18347278;
-            double z = 293.6589041985571;
+            double z = 60;
 
 
             Photo3D photo = new Photo3D(foacl35, image_width, image_height, omega, phi, kappa, 0, 0, z);
-            Vector3[] result = photo.GetArea(88);
+            Vector3[] result = photo.GetArea(0);
 
 
             DataTable table = new DataTable();
@@ -98,7 +108,7 @@ namespace S3CLook
 
             table.Rows.Add(row);
             
-            bool success = ExportSHP("./data/test.shp", table, SHPT.ARCZ);
+            bool success = ExportSHP("./data/dji.shp", table, SHPT.ARCZ);
         }
         /// <summary>
         /// 测试2
@@ -398,8 +408,8 @@ namespace S3CLook
             //atxml.SaveTiePoint();
 
             ATXml atxml = new ATXml();
-            atxml.Load("../data/LIANHUASHAN_2_XIAN80.xml");
-            //atxml.Load("../data/WGS84_UTM_49_32649.xml");
+            //atxml.Load("../data/LIANHUASHAN_2_XIAN80.xml");
+            atxml.Load("../data/WGS84_UTM_49_32649.xml");
             DataTable photos = atxml.SavePhotos();
 
             DataTable table = new DataTable();
@@ -438,8 +448,8 @@ namespace S3CLook
 
                 //if (name != "DSC00538.JPG") continue;
 
-                //x = x - 344741;
-                //y = y - 2686064;
+                x = x - 344741;
+                y = y - 2686064;
 
                 Photo3D photo = new Photo3D(foacl35, image_width, image_height, omega, phi, kappa, 0, 0, z);
                 Vector3[] result = photo.GetArea(0);
